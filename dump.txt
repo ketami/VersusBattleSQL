@@ -1,0 +1,262 @@
+CREATE TABLE "Participants" (
+	"Partname" TEXT NOT NULL,
+	"Name" TEXT NOT NULL,
+	"Surname" TEXT NOT NULL,
+	"Birthday" DATE NOT NULL,
+	"A.k.a." TEXT UNIQUE,
+	CONSTRAINT Participants_pk PRIMARY KEY ("Partname")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE SEQUENCE serial START 1;
+CREATE TABLE "Battle" (
+	"NumberOfBattle" int NOT NULL CHECK ("NumberOfBattle" > 0) DEFAULT nextval('serial'), 
+	"Part1" TEXT NOT NULL,
+	"Part2" TEXT NOT NULL,
+	"Winner" int NOT NULL CHECK ("Winner" > 0),
+	"SupportLevel1" int NOT NULL,
+	"SupportLevel2" int NOT NULL,
+	CONSTRAINT Battle_pk PRIMARY KEY ("NumberOfBattle")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "Cities" (
+	"Partname" TEXT NOT NULL,
+	"City" TEXT NOT NULL,
+	CONSTRAINT Cities_pk PRIMARY KEY ("Partname")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "Connection" (
+	"Partname" TEXT NOT NULL,
+	"NumberOfBattle" int NOT NULL CHECK ("NumberOfBattle" > 0),
+	CONSTRAINT Connection_pk PRIMARY KEY ("Partname","NumberOfBattle")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "BattleDate" (
+	"Date" DATE NOT NULL,
+	"NumberOfBattle" int NOT NULL CHECK ("NumberOfBattle" > 0) DEFAULT nextval('serial'),
+	CONSTRAINT BattleDate_pk PRIMARY KEY ("NumberOfBattle")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "BattlesSeason" (
+	"SeasonNumber" int NOT NULL,
+	"NumberOfBattle" int NOT NULL CHECK ("NumberOfBattle" > 0) DEFAULT nextval('serial'),
+	CONSTRAINT BattlesSeason_pk PRIMARY KEY ("NumberOfBattle")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "Season" (
+	"SeasonNumber" int NOT NULL CHECK ("SeasonNumber" > 0) DEFAULT nextval('serial'),
+	"Place" TEXT NOT NULL,
+	"MC" TEXT NOT NULL,
+	"CamQ" int,
+	"Value" money NOT NULL,
+	CONSTRAINT Season_pk PRIMARY KEY ("SeasonNumber")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+
+
+INSERT INTO "Participants" VALUES ('Ernesto Shut Up', 'Dmitry', 'Romaschenko', '1989-4-24');
+INSERT INTO "Participants" VALUES ('Alphavite', 'Nikita', 'Kurskeev', '1994-4-26');
+INSERT INTO "Participants" VALUES ('Mytee Dee', 'Dmitry', 'Muteev', '1984-8-13');
+INSERT INTO "Participants" VALUES ('Lodoss', 'Nikolay', 'Dukmas', '1990-9-14');
+INSERT INTO "Participants" VALUES ('Redo', 'Nikita', 'Redov', '1993-6-17');
+INSERT INTO "Participants" VALUES ('Emio Official', 'Emio', 'Official', '1981-8-5');
+INSERT INTO "Participants" VALUES ('Rickey F', 'Gena', 'Farafonov', '1994-5-23');
+INSERT INTO "Participants" VALUES ('Hip Hop of Alone Old Woman', 'Konstantin', 'Lopatin', '1994-1-4', 'Sever');
+INSERT INTO "Participants" VALUES ('Leha Cuprum', 'Andrey', 'Kuzmin', '1989-9-11', 'Andrey Yarokobi');
+INSERT INTO "Participants" VALUES ('MC Moonstar', 'Maxim', 'Zaharov', '1988-12-18', 'Zinoviy Gustava');
+INSERT INTO "Participants" VALUES ('Sin', 'Daniil', 'Korobov', '1996-2-19', 'SINside');
+INSERT INTO "Participants" VALUES ('Mlechniy', 'Ivan', 'Brednev', '1994-5-23');
+INSERT INTO "Participants" VALUES ('Buker D Fred', 'Fedor', 'Ignatyev', '1992-11-20', 'Booker');
+INSERT INTO "Participants" VALUES ('Narek', 'Narik', 'Petrosyan', '1991-7-1');
+INSERT INTO "Cities" VALUES ('Ernesto Shut Up', 'Voronezh');
+INSERT INTO "Cities" VALUES ('Alphavite', 'Alma-Ati');
+INSERT INTO "Cities" VALUES ('Mytee Dee', 'Moscow');
+INSERT INTO "Cities" VALUES ('Lodoss', 'Murmansk');
+INSERT INTO "Cities" VALUES ('Redo', 'Moscow');
+INSERT INTO "Cities" VALUES ('Emio Official', 'Minsk');
+INSERT INTO "Cities" VALUES ('Rickey F', 'Moscow');
+INSERT INTO "Cities" VALUES ('Hip Hop of Alone Old Woman', 'Volgograd');
+INSERT INTO "Cities" VALUES ('Leha Cuprum', 'Moscow');
+INSERT INTO "Cities" VALUES ('MC Moonstar', 'Murmansk');
+INSERT INTO "Cities" VALUES ('Sin', 'Moscow');
+INSERT INTO "Cities" VALUES ('Mlechniy', 'Moscow');
+INSERT INTO "Cities" VALUES ('Buker D Fred', 'Saint-Petersburg');
+INSERT INTO "Cities" VALUES ('Narek', 'Moscow');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Mytee Dee', 'Alphavite', 2, '0', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2")  VALUES ('Redo', 'Hip Hop of Alone Old Woman', 2, '3', '3');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Redo', 'Emio Official', 1, '3', '1');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Lodoss', 'Redo', 1, '2', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Ernesto Shut Up', 'Alphavite', 1, '1', '1');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Ernesto Shut Up', 'Mytee Dee', 2, '2', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ('Mytee Dee', 'Emio Official', 3, '0', '0');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Alphavite', 'Redo', 1, '5', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Ernesto Shut Up', 'Lodoss', 1, '4', '1');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Ernesto Shut Up', 'Alphavite', 2, '1', '3');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Leha Cuprum', 'Buker D Fred', 2, '5', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'MC Moonstar', 'Narek', 3, '1', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Rickey F', 'Sin', 1, '5', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Hip Hop of Alone Old Woman', 'Mlechniy', 3, '4', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'MC Moonstar', 'Mlechniy', 2, '1', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Buker D Fred', 'Sin', 1, '5', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Narek', 'Hip Hop of Alone Old Woman', 1, '4', '4');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Rickey F', 'Leha Cuprum', 1, '3', '1');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Leha Cuprum', 'Sin', 1, '5', '0');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Narek', 'Mlechniy', 2, '5', '5');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Rickey F', 'Buker D Fred', 1, '3', '3');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'MC Moonstar', 'Hip Hop of Alone Old Woman', 2, '0', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Hip Hop of Alone Old Woman', 'Rickey F', 1, '3', '5');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Buker D Fred', 'Mlechniy', 1, '4', '2');
+INSERT INTO "Battle" ("Part1","Part2","Winner","SupportLevel1","SupportLevel2") VALUES ( 'Hip Hop of Alone Old Woman', 'Buker D Fred', 1, '5', '5');
+ALTER SEQUENCE serial RESTART WITH 1;
+INSERT INTO "BattleDate" VALUES ('2014.5.28');
+INSERT INTO "BattleDate" VALUES ('2014.5.28');
+INSERT INTO "BattleDate" VALUES ('2014.7.5');
+INSERT INTO "BattleDate" VALUES ('2014.11.6');
+INSERT INTO "BattleDate" VALUES ('2014.12.31');
+INSERT INTO "BattleDate" VALUES ('2015.2.11');
+INSERT INTO "BattleDate" VALUES ('2015.4.23');
+INSERT INTO "BattleDate" VALUES ('2015.4.30');
+INSERT INTO "BattleDate" VALUES ('2015.5.6');
+INSERT INTO "BattleDate" VALUES ('2015.5.17');
+INSERT INTO "BattleDate" VALUES ('2015.11.19');
+INSERT INTO "BattleDate" VALUES ('2015.11.25');
+INSERT INTO "BattleDate" VALUES ('2015.12.2');
+INSERT INTO "BattleDate" VALUES ('2015.12.9');
+INSERT INTO "BattleDate" VALUES ('2015.12.16');
+INSERT INTO "BattleDate" VALUES ('2015.12.24');
+INSERT INTO "BattleDate" VALUES ('2015.12.28');
+INSERT INTO "BattleDate" VALUES ('2016.1.13');
+INSERT INTO "BattleDate" VALUES ('2016.1.27');
+INSERT INTO "BattleDate" VALUES ('2016.2.3');
+INSERT INTO "BattleDate" VALUES ('2016.2.10');
+INSERT INTO "BattleDate" VALUES ('2016.2.17');
+INSERT INTO "BattleDate" VALUES ('2016.3.13');
+INSERT INTO "BattleDate" VALUES ('2016.3.13');
+INSERT INTO "BattleDate" VALUES ('2016.5.26');
+INSERT INTO "Connection" VALUES ('Ernesto Shut Up', 5);
+INSERT INTO "Connection" VALUES ('Ernesto Shut Up', 6);
+INSERT INTO "Connection" VALUES ('Ernesto Shut Up', 9);
+INSERT INTO "Connection" VALUES ('Ernesto Shut Up', 10);
+INSERT INTO "Connection" VALUES ('Alphavite',1);
+INSERT INTO "Connection" VALUES ('Alphavite',5);
+INSERT INTO "Connection" VALUES ('Alphavite',8);
+INSERT INTO "Connection" VALUES ('Alphavite',10);
+INSERT INTO "Connection" VALUES ('Mytee Dee',1);
+INSERT INTO "Connection" VALUES ('Mytee Dee',6);
+INSERT INTO "Connection" VALUES ('Mytee Dee',7);
+INSERT INTO "Connection" VALUES ('Lodoss',4);
+INSERT INTO "Connection" VALUES ('Lodoss',9);
+INSERT INTO "Connection" VALUES ('Redo',2);
+INSERT INTO "Connection" VALUES ('Redo',3);
+INSERT INTO "Connection" VALUES ('Redo',4);
+INSERT INTO "Connection" VALUES ('Redo',8);
+INSERT INTO "Connection" VALUES ('Emio Official',3);
+INSERT INTO "Connection" VALUES ('Emio Official',7);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',2);
+INSERT INTO "Connection" VALUES ('Rickey F',13);
+INSERT INTO "Connection" VALUES ('Rickey F',18);
+INSERT INTO "Connection" VALUES ('Rickey F',21);
+INSERT INTO "Connection" VALUES ('Rickey F',23);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',14);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',17);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',22);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',23);
+INSERT INTO "Connection" VALUES ('Hip Hop of Alone Old Woman',25);
+INSERT INTO "Connection" VALUES ('Leha Cuprum',11);
+INSERT INTO "Connection" VALUES ('Leha Cuprum',18);
+INSERT INTO "Connection" VALUES ('Leha Cuprum',19);
+INSERT INTO "Connection" VALUES ('MC Moonstar',12);
+INSERT INTO "Connection" VALUES ('MC Moonstar',15);
+INSERT INTO "Connection" VALUES ('MC Moonstar',22);
+INSERT INTO "Connection" VALUES ('Sin',13);
+INSERT INTO "Connection" VALUES ('Sin',16);
+INSERT INTO "Connection" VALUES ('Sin',19);
+INSERT INTO "Connection" VALUES ('Mlechniy',14);
+INSERT INTO "Connection" VALUES ('Mlechniy',15);
+INSERT INTO "Connection" VALUES ('Mlechniy',20);
+INSERT INTO "Connection" VALUES ('Mlechniy',24);
+INSERT INTO "Connection" VALUES ('Buker D Fred',11);
+INSERT INTO "Connection" VALUES ('Buker D Fred',16);
+INSERT INTO "Connection" VALUES ('Buker D Fred',21);
+INSERT INTO "Connection" VALUES ('Buker D Fred',24);
+INSERT INTO "Connection" VALUES ('Buker D Fred',25);
+INSERT INTO "Connection" VALUES ('Narek',12);
+INSERT INTO "Connection" VALUES ('Narek',17);
+INSERT INTO "Connection" VALUES ('Narek',20);
+ALTER SEQUENCE serial RESTART WITH 1;
+INSERT INTO "BattlesSeason" VALUES (1);
+INSERT INTO "BattlesSeason" VALUES (3);
+INSERT INTO "BattlesSeason" VALUES (1);
+INSERT INTO "BattlesSeason" VALUES (1);
+INSERT INTO "BattlesSeason" VALUES (9);
+INSERT INTO "BattlesSeason" VALUES (1);
+INSERT INTO "BattlesSeason" VALUES (8);
+INSERT INTO "BattlesSeason" VALUES (6);
+INSERT INTO "BattlesSeason" VALUES (9);
+INSERT INTO "BattlesSeason" VALUES (7);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (7);
+INSERT INTO "BattlesSeason" VALUES (8);
+INSERT INTO "BattlesSeason" VALUES (6);
+INSERT INTO "BattlesSeason" VALUES (5);
+INSERT INTO "BattlesSeason" VALUES (4);
+INSERT INTO "BattlesSeason" VALUES (5);
+INSERT INTO "BattlesSeason" VALUES (2);
+INSERT INTO "BattlesSeason" VALUES (4);
+INSERT INTO "BattlesSeason" VALUES (3);
+INSERT INTO "BattlesSeason" VALUES (2);
+ALTER SEQUENCE serial RESTART WITH 1;
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('1703','Sasha',4,1000);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('1703','Kingsta',4,1400);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Alpha','Kingsta',3,1200);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('1703','Sasha',2,1800);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Griboyedov','Kingsta',3,1700);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Griboyedov','Sasha',5,2500);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Alpha','4EuHu',6,2300);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Griboyedov','4EuHu',6,2000);
+INSERT INTO "Season" ("Place","MC","CamQ","Value") VALUES ('Alpha','Sasha',8,3000);
+
+ALTER TABLE "Participants" ADD CONSTRAINT "Participants_fk0" FOREIGN KEY ("Partname") REFERENCES "Cities"("Partname");
+
+ALTER TABLE "Battle" ADD CONSTRAINT "Battle_fk0" FOREIGN KEY ("NumberOfBattle") REFERENCES "BattlesSeason"("NumberOfBattle");
+ALTER TABLE "Battle" ADD CONSTRAINT "Battle_fk1" FOREIGN KEY ("Part1") REFERENCES "Participants"("Partname");
+ALTER TABLE "Battle" ADD CONSTRAINT "Battle_fk2" FOREIGN KEY ("Part2") REFERENCES "Participants"("Partname");
+
+
+ALTER TABLE "Connection" ADD CONSTRAINT "Connection_fk0" FOREIGN KEY ("Partname") REFERENCES "Participants"("Partname");
+ALTER TABLE "Connection" ADD CONSTRAINT "Connection_fk1" FOREIGN KEY ("NumberOfBattle") REFERENCES "Battle"("NumberOfBattle");
+
+ALTER TABLE "BattleDate" ADD CONSTRAINT "BattleDate_fk0" FOREIGN KEY ("NumberOfBattle") REFERENCES "Battle"("NumberOfBattle");
+
+ALTER TABLE "BattlesSeason" ADD CONSTRAINT "BattlesSeason_fk0" FOREIGN KEY ("SeasonNumber") REFERENCES "Season"("SeasonNumber");
