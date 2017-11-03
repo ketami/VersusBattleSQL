@@ -64,10 +64,10 @@ CREATE TABLE "Battle" (
     "Part1" text NOT NULL,
     "Part2" text NOT NULL,
     "Winner" integer NOT NULL,
-    "SupportLevel1" integer NOT NULL,
-    "SupportLevel2" integer NOT NULL,
+    "SupportLevel1" integer NOT NULL CHECK (("SupportLevel1" > 0) AND ("SupportLevel1" < 6)),
+    "SupportLevel2" integer NOT NULL CHECK (("SupportLevel2" > 0) AND ("SupportLevel2" < 6)),
     CONSTRAINT "Battle_NumberOfBattle_check" CHECK (("NumberOfBattle" > 0)),
-    CONSTRAINT "Battle_Winner_check" CHECK (("Winner" > 0))
+    CONSTRAINT "Battle_Winner_check" CHECK (("Winner" > 0) AND ("Winner" < 4))
 );
 
 
