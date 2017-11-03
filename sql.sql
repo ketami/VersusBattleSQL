@@ -5,7 +5,7 @@
 -- Dumped from database version 9.6.5
 -- Dumped by pg_dump version 9.6.5
 
--- Started on 2017-11-03 19:54:38
+-- Started on 2017-11-03 20:50:24
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -25,7 +25,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2194 (class 0 OID 0)
+-- TOC entry 2196 (class 0 OID 0)
 -- Dependencies: 1
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
@@ -36,7 +36,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- TOC entry 186 (class 1259 OID 18888)
+-- TOC entry 186 (class 1259 OID 18994)
 -- Name: serial; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -55,7 +55,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 187 (class 1259 OID 18890)
+-- TOC entry 187 (class 1259 OID 18996)
 -- Name: Battle; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -64,17 +64,19 @@ CREATE TABLE "Battle" (
     "Part1" text NOT NULL,
     "Part2" text NOT NULL,
     "Winner" integer NOT NULL,
-    "SupportLevel1" integer NOT NULL CHECK (("SupportLevel1" > 0) AND ("SupportLevel1" < 6)),
-    "SupportLevel2" integer NOT NULL CHECK (("SupportLevel2" > 0) AND ("SupportLevel2" < 6)),
+    "SupportLevel1" integer NOT NULL,
+    "SupportLevel2" integer NOT NULL,
     CONSTRAINT "Battle_NumberOfBattle_check" CHECK (("NumberOfBattle" > 0)),
-    CONSTRAINT "Battle_Winner_check" CHECK (("Winner" > 0) AND ("Winner" < 4))
+    CONSTRAINT "Battle_SupportLevel1_check" CHECK ((("SupportLevel1" > '-1'::integer) AND ("SupportLevel1" < 6))),
+    CONSTRAINT "Battle_SupportLevel2_check" CHECK ((("SupportLevel2" > '-1'::integer) AND ("SupportLevel2" < 6))),
+    CONSTRAINT "Battle_Winner_check" CHECK ((("Winner" > 0) AND ("Winner" < 4)))
 );
 
 
 ALTER TABLE "Battle" OWNER TO postgres;
 
 --
--- TOC entry 190 (class 1259 OID 18918)
+-- TOC entry 190 (class 1259 OID 19026)
 -- Name: BattleDate; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -88,7 +90,7 @@ CREATE TABLE "BattleDate" (
 ALTER TABLE "BattleDate" OWNER TO postgres;
 
 --
--- TOC entry 191 (class 1259 OID 18925)
+-- TOC entry 191 (class 1259 OID 19033)
 -- Name: BattlesSeason; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -102,7 +104,7 @@ CREATE TABLE "BattlesSeason" (
 ALTER TABLE "BattlesSeason" OWNER TO postgres;
 
 --
--- TOC entry 188 (class 1259 OID 18901)
+-- TOC entry 188 (class 1259 OID 19009)
 -- Name: Cities; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -115,7 +117,7 @@ CREATE TABLE "Cities" (
 ALTER TABLE "Cities" OWNER TO postgres;
 
 --
--- TOC entry 189 (class 1259 OID 18909)
+-- TOC entry 189 (class 1259 OID 19017)
 -- Name: Connection; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -129,7 +131,7 @@ CREATE TABLE "Connection" (
 ALTER TABLE "Connection" OWNER TO postgres;
 
 --
--- TOC entry 185 (class 1259 OID 18878)
+-- TOC entry 185 (class 1259 OID 18984)
 -- Name: Participants; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -145,7 +147,7 @@ CREATE TABLE "Participants" (
 ALTER TABLE "Participants" OWNER TO postgres;
 
 --
--- TOC entry 192 (class 1259 OID 18932)
+-- TOC entry 192 (class 1259 OID 19040)
 -- Name: Season; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -162,7 +164,7 @@ CREATE TABLE "Season" (
 ALTER TABLE "Season" OWNER TO postgres;
 
 --
--- TOC entry 2183 (class 0 OID 18890)
+-- TOC entry 2185 (class 0 OID 18996)
 -- Dependencies: 187
 -- Data for Name: Battle; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -195,7 +197,7 @@ INSERT INTO "Battle" VALUES (25, 'Hip Hop of Alone Old Woman', 'Buker D Fred', 1
 
 
 --
--- TOC entry 2186 (class 0 OID 18918)
+-- TOC entry 2188 (class 0 OID 19026)
 -- Dependencies: 190
 -- Data for Name: BattleDate; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -228,7 +230,7 @@ INSERT INTO "BattleDate" VALUES ('2016-05-26', 25);
 
 
 --
--- TOC entry 2187 (class 0 OID 18925)
+-- TOC entry 2189 (class 0 OID 19033)
 -- Dependencies: 191
 -- Data for Name: BattlesSeason; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -261,7 +263,7 @@ INSERT INTO "BattlesSeason" VALUES (2, 25);
 
 
 --
--- TOC entry 2184 (class 0 OID 18901)
+-- TOC entry 2186 (class 0 OID 19009)
 -- Dependencies: 188
 -- Data for Name: Cities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -283,7 +285,7 @@ INSERT INTO "Cities" VALUES ('Narek', 'Moscow');
 
 
 --
--- TOC entry 2185 (class 0 OID 18909)
+-- TOC entry 2187 (class 0 OID 19017)
 -- Dependencies: 189
 -- Data for Name: Connection; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -341,7 +343,7 @@ INSERT INTO "Connection" VALUES ('Narek', 20);
 
 
 --
--- TOC entry 2181 (class 0 OID 18878)
+-- TOC entry 2183 (class 0 OID 18984)
 -- Dependencies: 185
 -- Data for Name: Participants; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -363,7 +365,7 @@ INSERT INTO "Participants" VALUES ('Narek', 'Narik', 'Petrosyan', '1991-07-01', 
 
 
 --
--- TOC entry 2188 (class 0 OID 18932)
+-- TOC entry 2190 (class 0 OID 19040)
 -- Dependencies: 192
 -- Data for Name: Season; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -380,7 +382,7 @@ INSERT INTO "Season" VALUES (9, 'Alpha', 'Sasha', 8, '3 000,00р.');
 
 
 --
--- TOC entry 2195 (class 0 OID 0)
+-- TOC entry 2197 (class 0 OID 0)
 -- Dependencies: 186
 -- Name: serial; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -389,7 +391,7 @@ SELECT pg_catalog.setval('serial', 9, true);
 
 
 --
--- TOC entry 2041 (class 2606 OID 18887)
+-- TOC entry 2043 (class 2606 OID 18993)
 -- Name: Participants Participants_A.k.a._key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -398,7 +400,7 @@ ALTER TABLE ONLY "Participants"
 
 
 --
--- TOC entry 2045 (class 2606 OID 18900)
+-- TOC entry 2047 (class 2606 OID 19008)
 -- Name: Battle battle_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -407,7 +409,7 @@ ALTER TABLE ONLY "Battle"
 
 
 --
--- TOC entry 2051 (class 2606 OID 18924)
+-- TOC entry 2053 (class 2606 OID 19032)
 -- Name: BattleDate battledate_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -416,7 +418,7 @@ ALTER TABLE ONLY "BattleDate"
 
 
 --
--- TOC entry 2053 (class 2606 OID 18931)
+-- TOC entry 2055 (class 2606 OID 19039)
 -- Name: BattlesSeason battlesseason_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -425,7 +427,7 @@ ALTER TABLE ONLY "BattlesSeason"
 
 
 --
--- TOC entry 2047 (class 2606 OID 18908)
+-- TOC entry 2049 (class 2606 OID 19016)
 -- Name: Cities cities_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -434,7 +436,7 @@ ALTER TABLE ONLY "Cities"
 
 
 --
--- TOC entry 2049 (class 2606 OID 18917)
+-- TOC entry 2051 (class 2606 OID 19025)
 -- Name: Connection connection_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -443,7 +445,7 @@ ALTER TABLE ONLY "Connection"
 
 
 --
--- TOC entry 2043 (class 2606 OID 18885)
+-- TOC entry 2045 (class 2606 OID 18991)
 -- Name: Participants participants_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -452,7 +454,7 @@ ALTER TABLE ONLY "Participants"
 
 
 --
--- TOC entry 2055 (class 2606 OID 18941)
+-- TOC entry 2057 (class 2606 OID 19049)
 -- Name: Season season_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -461,7 +463,7 @@ ALTER TABLE ONLY "Season"
 
 
 --
--- TOC entry 2062 (class 2606 OID 18972)
+-- TOC entry 2064 (class 2606 OID 19080)
 -- Name: BattleDate BattleDate_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -470,7 +472,7 @@ ALTER TABLE ONLY "BattleDate"
 
 
 --
--- TOC entry 2057 (class 2606 OID 18947)
+-- TOC entry 2059 (class 2606 OID 19055)
 -- Name: Battle Battle_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -479,7 +481,7 @@ ALTER TABLE ONLY "Battle"
 
 
 --
--- TOC entry 2058 (class 2606 OID 18952)
+-- TOC entry 2060 (class 2606 OID 19060)
 -- Name: Battle Battle_fk1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -488,7 +490,7 @@ ALTER TABLE ONLY "Battle"
 
 
 --
--- TOC entry 2059 (class 2606 OID 18957)
+-- TOC entry 2061 (class 2606 OID 19065)
 -- Name: Battle Battle_fk2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -497,7 +499,7 @@ ALTER TABLE ONLY "Battle"
 
 
 --
--- TOC entry 2063 (class 2606 OID 18977)
+-- TOC entry 2065 (class 2606 OID 19085)
 -- Name: BattlesSeason BattlesSeason_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -506,7 +508,7 @@ ALTER TABLE ONLY "BattlesSeason"
 
 
 --
--- TOC entry 2060 (class 2606 OID 18962)
+-- TOC entry 2062 (class 2606 OID 19070)
 -- Name: Connection Connection_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -515,7 +517,7 @@ ALTER TABLE ONLY "Connection"
 
 
 --
--- TOC entry 2061 (class 2606 OID 18967)
+-- TOC entry 2063 (class 2606 OID 19075)
 -- Name: Connection Connection_fk1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -524,7 +526,7 @@ ALTER TABLE ONLY "Connection"
 
 
 --
--- TOC entry 2056 (class 2606 OID 18942)
+-- TOC entry 2058 (class 2606 OID 19050)
 -- Name: Participants Participants_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -532,7 +534,7 @@ ALTER TABLE ONLY "Participants"
     ADD CONSTRAINT "Participants_fk0" FOREIGN KEY ("Partname") REFERENCES "Cities"("Partname");
 
 
--- Completed on 2017-11-03 19:54:39
+-- Completed on 2017-11-03 20:50:24
 
 --
 -- PostgreSQL database dump complete
