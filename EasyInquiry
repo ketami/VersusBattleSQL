@@ -1,0 +1,22 @@
+Выводит столбец с участниками
+
+Select "Partname" From "Participants";
+
+
+Происходит склейка трёх таблиц: таблица с участниками, с их городами и с их альтернативными именами, т.е. выводится вся сущность.
+
+SELECT * FROM ( "Participants" LEFT JOIN  "Cities" USING ("Partname") ) LEFT JOIN "AlternativeNames" USING ("Partname");
+
+
+Выводит на экран участников, имена которых начинаются на M
+
+SELECT "Participants"."Partname"
+    FROM "Participants"
+    WHERE "Participants"."Partname" LIKE 'M%';
+
+
+Выводит номера сезонов, стоимость выпуска которых больше, чем 2000
+
+SELECT "Season"."SeasonNumber"
+    FROM "Season"
+    WHERE (("Season"."Value") > 2000);
