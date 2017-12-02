@@ -20,3 +20,6 @@ SELECT "Participants"."Partname"
 SELECT "Season"."SeasonNumber"
     FROM "Season"
     WHERE (("Season"."Value") > 2000);
+
+1 сложный: вывести на экран ведущих первых пяти батлов
+select distinct "MC" from(Select * from "Battle" left join "Season" using ("SeasonNumber") limit 5) as ss;
