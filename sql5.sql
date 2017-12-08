@@ -1,11 +1,11 @@
 
-DROP DATABASE n.melkov;
-CREATE DATABASE n.melkov WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'Russian_Russia.1251' LC_CTYPE = 'Russian_Russia.1251';
-ALTER DATABASE n.melkov OWNER TO postgres;
+DROP DATABASE n_melkov;
+CREATE DATABASE n_melkov WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'Russian_Russia.1251' LC_CTYPE = 'Russian_Russia.1251';
+ALTER DATABASE n_melkov OWNER TO postgres;
 
-\connect n.melkov
+\connect n_melkov
 
-SET search_path = public
+SET search_path = public;
 
 
 
