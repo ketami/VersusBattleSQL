@@ -1,61 +1,13 @@
---
--- PostgreSQL database dump
---
 
--- Dumped from database version 9.6.5
--- Dumped by pg_dump version 9.6.5
+DROP DATABASE n.melkov;
+CREATE DATABASE n.melkov WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'Russian_Russia.1251' LC_CTYPE = 'Russian_Russia.1251';
+ALTER DATABASE n.melkov OWNER TO postgres;
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
+\connect n.melkov
 
-DROP DATABASE versus;
---
--- Name: versus; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE versus WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'Russian_Russia.1251' LC_CTYPE = 'Russian_Russia.1251';
+SET search_path = public
 
 
-ALTER DATABASE versus OWNER TO postgres;
-
-\connect versus
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
-SET search_path = public, pg_catalog;
-
-SET default_with_oids = false;
-
---
--- Name: AlternativeNames; Type: TABLE; Schema: public; Owner: postgres
---
 
 CREATE TABLE "AlternativeNames" (
     "Partname" text NOT NULL,
@@ -65,9 +17,7 @@ CREATE TABLE "AlternativeNames" (
 
 ALTER TABLE "AlternativeNames" OWNER TO postgres;
 
---
--- Name: serial; Type: SEQUENCE; Schema: public; Owner: postgres
---
+
 
 CREATE SEQUENCE serial
     START WITH 1
@@ -78,10 +28,6 @@ CREATE SEQUENCE serial
 
 
 ALTER TABLE serial OWNER TO postgres;
-
---
--- Name: Battle; Type: TABLE; Schema: public; Owner: postgres
---
 
 CREATE TABLE "Battle" (
     "NumberOfBattle" integer DEFAULT nextval('serial'::regclass) NOT NULL,
@@ -100,10 +46,6 @@ CREATE TABLE "Battle" (
 
 ALTER TABLE "Battle" OWNER TO postgres;
 
---
--- Name: Cities; Type: TABLE; Schema: public; Owner: postgres
---
-
 CREATE TABLE "Cities" (
     "Partname" text NOT NULL,
     "City" text NOT NULL
@@ -112,9 +54,6 @@ CREATE TABLE "Cities" (
 
 ALTER TABLE "Cities" OWNER TO postgres;
 
---
--- Name: Participants; Type: TABLE; Schema: public; Owner: postgres
---
 
 CREATE TABLE "Participants" (
     "Partname" text NOT NULL,
@@ -126,9 +65,6 @@ CREATE TABLE "Participants" (
 
 ALTER TABLE "Participants" OWNER TO postgres;
 
---
--- Name: Season; Type: TABLE; Schema: public; Owner: postgres
---
 
 CREATE TABLE "Season" (
     "SeasonNumber" integer DEFAULT nextval('serial'::regclass) NOT NULL,
@@ -141,21 +77,12 @@ CREATE TABLE "Season" (
 
 ALTER TABLE "Season" OWNER TO postgres;
 
---
--- Data for Name: AlternativeNames; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 INSERT INTO "AlternativeNames" VALUES ('Hip Hop of Alone Old Woman', 'Sever');
 INSERT INTO "AlternativeNames" VALUES ('Leha Cuprum', 'Andrey Yarokobi');
 INSERT INTO "AlternativeNames" VALUES ('MC Moonstar', 'Zinoviy Gustava');
 INSERT INTO "AlternativeNames" VALUES ('Buker D Fred', 'Booker');
 INSERT INTO "AlternativeNames" VALUES ('Sin', 'SINside');
 INSERT INTO "AlternativeNames" VALUES ('Buker D Fred', 'Antihype');
-
-
---
--- Data for Name: Battle; Type: TABLE DATA; Schema: public; Owner: postgres
---
 
 INSERT INTO "Battle" VALUES (1, 'Mytee Dee', 'Alphavite', 2, 0, 4, 1, '2014-05-28');
 INSERT INTO "Battle" VALUES (2, 'Redo', 'Hip Hop of Alone Old Woman', 2, 3, 3, 3, '2014-05-28');
@@ -209,10 +136,6 @@ INSERT INTO "Cities" VALUES ('Leha Cuprum', 'Bishkek');
 INSERT INTO "Cities" VALUES ('Emio Official', 'Moscow');
 
 
---
--- Data for Name: Participants; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 INSERT INTO "Participants" VALUES ('Ernesto Shut Up', 'Dmitry', 'Romaschenko', '1989-04-24');
 INSERT INTO "Participants" VALUES ('Alphavite', 'Nikita', 'Kurskeev', '1994-04-26');
 INSERT INTO "Participants" VALUES ('Mytee Dee', 'Dmitry', 'Muteev', '1984-08-13');
@@ -228,11 +151,6 @@ INSERT INTO "Participants" VALUES ('Mlechniy', 'Ivan', 'Brednev', '1994-05-23');
 INSERT INTO "Participants" VALUES ('Buker D Fred', 'Fedor', 'Ignatyev', '1992-11-20');
 INSERT INTO "Participants" VALUES ('Narek', 'Narik', 'Petrosyan', '1991-07-01');
 
-
---
--- Data for Name: Season; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 INSERT INTO "Season" VALUES (1, '1703', 'Sasha', 4, 1000);
 INSERT INTO "Season" VALUES (2, '1703', 'Kingsta', 4, 1400);
 INSERT INTO "Season" VALUES (3, 'Alpha', 'Kingsta', 3, 1200);
@@ -243,103 +161,44 @@ INSERT INTO "Season" VALUES (7, 'Alpha', '4EuHu', 6, 2300);
 INSERT INTO "Season" VALUES (8, 'Griboyedov', '4EuHu', 6, 2000);
 INSERT INTO "Season" VALUES (9, 'Alpha', 'Sasha', 8, 3000);
 
-
---
--- Name: serial; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
 SELECT pg_catalog.setval('serial', 9, true);
-
-
---
--- Name: AlternativeNames AlternativeNames_A.k.a._key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY "AlternativeNames"
     ADD CONSTRAINT "AlternativeNames_A.k.a._key" UNIQUE ("A.k.a.");
 
 
---
--- Name: Battle battle_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "Battle"
     ADD CONSTRAINT battle_pk PRIMARY KEY ("NumberOfBattle");
-
-
---
--- Name: Cities cities_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY "Cities"
     ADD CONSTRAINT cities_pk PRIMARY KEY ("Partname", "City");
 
-
---
--- Name: AlternativeNames names_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "AlternativeNames"
     ADD CONSTRAINT names_pk PRIMARY KEY ("Partname", "A.k.a.");
-
-
---
--- Name: Participants participants_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY "Participants"
     ADD CONSTRAINT participants_pk PRIMARY KEY ("Partname");
 
-
---
--- Name: Season season_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "Season"
     ADD CONSTRAINT season_pk PRIMARY KEY ("SeasonNumber");
-
-
---
--- Name: AlternativeNames AlternativeNames_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY "AlternativeNames"
     ADD CONSTRAINT "AlternativeNames_fk0" FOREIGN KEY ("Partname") REFERENCES "Participants"("Partname");
 
 
---
--- Name: Battle Battle_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "Battle"
     ADD CONSTRAINT "Battle_fk0" FOREIGN KEY ("Part1") REFERENCES "Participants"("Partname");
 
-
---
--- Name: Battle Battle_fk1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
 
 ALTER TABLE ONLY "Battle"
     ADD CONSTRAINT "Battle_fk1" FOREIGN KEY ("Part2") REFERENCES "Participants"("Partname");
 
 
---
--- Name: Battle Battle_fk2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "Battle"
     ADD CONSTRAINT "Battle_fk2" FOREIGN KEY ("SeasonNumber") REFERENCES "Season"("SeasonNumber");
 
 
---
--- Name: Cities Cities_fk0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY "Cities"
     ADD CONSTRAINT "Cities_fk0" FOREIGN KEY ("Partname") REFERENCES "Participants"("Partname");
 
-
---
--- PostgreSQL database dump complete
---
 
