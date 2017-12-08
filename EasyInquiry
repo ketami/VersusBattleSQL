@@ -8,6 +8,7 @@ Select "Partname" From "Participants";
 SELECT * FROM ( "Participants" LEFT JOIN  "Cities" USING ("Partname") ) LEFT JOIN "AlternativeNames" USING ("Partname");
 
 
+
 Выводит на экран участников, имена которых начинаются на M
 
 SELECT "Participants"."Partname"
@@ -23,3 +24,38 @@ SELECT "Season"."SeasonNumber"
 
 1 сложный: вывести на экран ведущих первых пяти батлов
 select distinct "MC" from(Select * from "Battle" left join "Season" using ("SeasonNumber") limit 5) as ss;
+
+
+UPD 08.12.2017
+
+4 простой - вывести дату рождения самого молодого участника
+SELECT max("Birthday") as Youngest FROM public."Participants" 
+
+2 средний - Вывести никнеймы проигравших в первых 5 батлах (по сортировке) в первых 3 сезонах, 
+которые выступали вторыми, а так же место проведения.
+Select "Part2", "Place" from "Battle"
+left join "Season" using ("SeasonNumber") 
+where (("SeasonNumber" < 4) and ("Winner"=1))
+order by "NumberOfBattle" 
+limit 5;
+
+2 сложный - Вывести цену работы каждого оператора и средний уровень поддержки в поединках, сыгранных вничью. Отсортировать по цене.
+Select ("Value" / "CamQ") As "Quantity", (("SupportLevel1"+"SupportLevel2")/2) as "Support"
+from "Battle"
+inner join "Season"
+on ("Battle"."SeasonNumber"="Season"."SeasonNumber" and ("Winner"=3))
+order by "Quantity";
+
+3 сложный -  Вывести никнеймы и один из альтернативных никнеймов, дату рождения и номера всех поединков у участников, 
+которым больше 23 лет, сортировать по дате рождения
+
+Select "Battlepart"."Partname","NumberOfBattle", "Birthday", "A.k.a." as "AlterName" from (Select * from "Participants"
+inner join "Battle" 
+on ("Participants"."Partname"="Battle"."Part1" or "Participants"."Partname"="Battle"."Part2"))
+as "Battlepart"
+	inner join (Select distinct on("Partname") * from "AlternativeNames") as "AlternativeNames"
+on (("Battlepart"."Partname"="AlternativeNames"."Partname")
+    and ("Battlepart"."Birthday"<date(current_date - interval '23 year')))
+    order by "Battlepart"."Birthday" desc
+   
+   
