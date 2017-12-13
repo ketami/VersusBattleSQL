@@ -2,35 +2,153 @@
 
 Select "Partname" From "Participants";
 
+_________
+Оптимизация:
 
+
+До индексации:
+'Seq Scan on "Participants"  (cost=0.00..1.14 rows=14 width=32) (actual time=0.019..0.041 rows=14 loops=1)'
+'Planning time: 0.129 ms'
+'Execution time: 0.087 ms'
+
+После индексации:
+
+'Index Only Scan using "Participants_Partname_idx" on "Participants"  (cost=0.14..12.35 rows=14 width=32) (actual time=0.119..0.142 rows=14 loops=1)'
+'  Heap Fetches: 14'
+'Planning time: 0.121 ms'
+'Execution time: 0.196 ms'
+_________
 Происходит склейка трёх таблиц: таблица с участниками, с их городами и с их альтернативными именами, т.е. выводится вся сущность.
 
 SELECT * FROM ( "Participants" LEFT JOIN  "Cities" USING ("Partname") ) LEFT JOIN "AlternativeNames" USING ("Partname");
 
 
+_________
+Оптимизация:
 
+
+До индексации:
+'Hash Left Join  (cost=2.45..4.00 rows=19 width=164) (actual time=0.165..0.319 rows=21 loops=1)'
+'  Hash Cond: ("Participants"."Partname" = "AlternativeNames"."Partname")'
+'  ->  Hash Right Join  (cost=1.32..2.72 rows=19 width=132) (actual time=0.109..0.201 rows=19 loops=1)'
+'        Hash Cond: ("Cities"."Partname" = "Participants"."Partname")'
+'        ->  Seq Scan on "Cities"  (cost=0.00..1.19 rows=19 width=64) (actual time=0.012..0.040 rows=19 loops=1)'
+'        ->  Hash  (cost=1.14..1.14 rows=14 width=100) (actual time=0.080..0.080 rows=14 loops=1)'
+'              Buckets: 1024  Batches: 1  Memory Usage: 5kB'
+'              ->  Seq Scan on "Participants"  (cost=0.00..1.14 rows=14 width=100) (actual time=0.030..0.051 rows=14 loops=1)'
+'  ->  Hash  (cost=1.06..1.06 rows=6 width=64) (actual time=0.043..0.043 rows=6 loops=1)'
+'        Buckets: 1024  Batches: 1  Memory Usage: 5kB'
+'        ->  Seq Scan on "AlternativeNames"  (cost=0.00..1.06 rows=6 width=64) (actual time=0.012..0.021 rows=6 loops=1)'
+'Planning time: 12.622 ms'
+'Execution time: 0.401 ms'
+
+После индексации:
+'Merge Left Join  (cost=0.41..37.32 rows=19 width=164) (actual time=17.257..17.507 rows=21 loops=1)'
+'  Merge Cond: ("Participants"."Partname" = "Cities"."Partname")'
+'  ->  Merge Left Join  (cost=0.27..24.68 rows=14 width=132) (actual time=0.032..0.134 rows=15 loops=1)'
+'        Merge Cond: ("Participants"."Partname" = "AlternativeNames"."Partname")'
+'        ->  Index Scan using "Participants_Partname_idx" on "Participants"  (cost=0.14..12.35 rows=14 width=100) (actual time=0.011..0.037 rows=14 loops=1)'
+'        ->  Index Scan using pips on "AlternativeNames"  (cost=0.13..12.22 rows=6 width=64) (actual time=0.005..0.015 rows=6 loops=1)'
+'  ->  Index Only Scan using cities_pk on "Cities"  (cost=0.14..12.42 rows=19 width=64) (actual time=17.209..17.248 rows=21 loops=1)'
+'        Heap Fetches: 21'
+'Planning time: 0.374 ms'
+'Execution time: 17.596 ms'
+
+_________
 Выводит на экран участников, имена которых начинаются на M
 
 SELECT "Participants"."Partname"
     FROM "Participants"
     WHERE "Participants"."Partname" LIKE 'M%';
+_________
+Оптимизация:
+До индексации:
+'Seq Scan on "Season"  (cost=0.00..1.11 rows=3 width=4) (actual time=0.018..0.023 rows=3 loops=1)'
+'  Filter: ("Value" > 2000)'
+'  Rows Removed by Filter: 6'
+'Planning time: 0.098 ms'
+'Execution time: 0.049 ms'
 
+После индексации:
+
+'Index Scan using "Season_Value_idx" on "Season"  (cost=0.14..8.19 rows=3 width=4) (actual time=0.033..0.039 rows=3 loops=1)'
+'  Index Cond: ("Value" > 2000)'
+'Planning time: 0.366 ms'
+'Execution time: 0.070 ms'
+
+_________
 
 Выводит номера сезонов, стоимость выпуска которых больше, чем 2000
 
 SELECT "Season"."SeasonNumber"
     FROM "Season"
     WHERE (("Season"."Value") > 2000);
+_________
+Оптимизация:
 
+
+До индексации:
+
+
+После индексации:
+
+
+_________
 1 сложный: вывести на экран ведущих первых пяти батлов
 select distinct "MC" from(Select * from "Battle" left join "Season" using ("SeasonNumber") limit 5) as ss;
+_________
+Оптимизация:
 
 
-UPD 08.12.2017
+До индексации:
+
+'HashAggregate  (cost=1.21..1.26 rows=5 width=32) (actual time=0.277..0.279 rows=2 loops=1)'
+'  Group Key: "Season"."MC"'
+'  ->  Limit  (cost=0.00..1.15 rows=5 width=160) (actual time=0.054..0.258 rows=5 loops=1)'
+'        ->  Nested Loop Left Join  (cost=0.00..5.74 rows=25 width=160) (actual time=0.049..0.242 rows=5 loops=1)'
+'              Join Filter: ("Battle"."SeasonNumber" = "Season"."SeasonNumber")'
+'              Rows Removed by Join Filter: 40'
+'              ->  Seq Scan on "Battle"  (cost=0.00..1.25 rows=25 width=4) (actual time=0.021..0.027 rows=5 loops=1)'
+'              ->  Materialize  (cost=0.00..1.14 rows=9 width=36) (actual time=0.005..0.023 rows=9 loops=5)'
+'                    ->  Seq Scan on "Season"  (cost=0.00..1.09 rows=9 width=36) (actual time=0.010..0.023 rows=9 loops=1)'
+'Planning time: 0.249 ms'
+'Execution time: 0.345 ms'
+После индексации:
+
+'Unique  (cost=5.32..5.34 rows=5 width=32) (actual time=0.221..0.239 rows=2 loops=1)'
+'  ->  Sort  (cost=5.32..5.33 rows=5 width=32) (actual time=0.217..0.224 rows=5 loops=1)'
+'        Sort Key: ss."MC"'
+'        Sort Method: quicksort  Memory: 17kB'
+'        ->  Subquery Scan on ss  (cost=0.27..5.26 rows=5 width=32) (actual time=0.125..0.188 rows=5 loops=1)'
+'              ->  Limit  (cost=0.27..5.21 rows=5 width=160) (actual time=0.119..0.168 rows=5 loops=1)'
+'                    ->  Merge Left Join  (cost=0.27..24.96 rows=25 width=160) (actual time=0.114..0.147 rows=5 loops=1)'
+'                          Merge Cond: ("Battle"."SeasonNumber" = "Season"."SeasonNumber")'
+'                          ->  Index Only Scan using "Battle_SeasonNumber_idx" on "Battle"  (cost=0.14..12.51 rows=25 width=4) (actual time=0.098..0.105 rows=5 loops=1)'
+'                                Heap Fetches: 5'
+'                          ->  Index Scan using season_pk on "Season"  (cost=0.14..12.27 rows=9 width=36) (actual time=0.006..0.012 rows=5 loops=1)'
+'Planning time: 0.440 ms'
+'Execution time: 0.307 ms'
+_________
 
 4 простой - вывести дату рождения самого молодого участника
 SELECT max("Birthday") as Youngest FROM public."Participants" 
-
+_________
+Оптимизация:
+До индексации:
+'Aggregate  (cost=1.18..1.19 rows=1 width=4) (actual time=0.067..0.068 rows=1 loops=1)'
+'  ->  Seq Scan on "Participants"  (cost=0.00..1.14 rows=14 width=4) (actual time=0.015..0.035 rows=14 loops=1)'
+'Planning time: 0.205 ms'
+'Execution time: 0.112 ms'
+После индексации:
+'Result  (cost=1.01..1.02 rows=1 width=4) (actual time=0.104..0.105 rows=1 loops=1)'
+'  InitPlan 1 (returns $0)'
+'    ->  Limit  (cost=0.14..1.01 rows=1 width=4) (actual time=0.094..0.096 rows=1 loops=1)'
+'          ->  Index Only Scan Backward using "Participants_Birthday_idx1" on "Participants"  (cost=0.14..12.38 rows=14 width=4) (actual time=0.090..0.090 rows=1 loops=1)'
+'                Index Cond: ("Birthday" IS NOT NULL)'
+'                Heap Fetches: 1'
+'Planning time: 1.256 ms'
+'Execution time: 0.139 ms'
+_________
 2 средний - Вывести никнеймы проигравших в первых 5 батлах (по сортировке) в первых 3 сезонах, 
 которые выступали вторыми, а так же место проведения.
 Select "Part2", "Place" from "Battle"
@@ -38,6 +156,35 @@ left join "Season" using ("SeasonNumber")
 where (("SeasonNumber" < 4) and ("Winner"=1))
 order by "NumberOfBattle" 
 limit 5;
+__________________
+Оптимизация:
+До индексации:
+'Limit  (cost=2.53..2.54 rows=1 width=68) (actual time=0.158..0.176 rows=5 loops=1)'
+'  ->  Sort  (cost=2.53..2.54 rows=1 width=68) (actual time=0.153..0.160 rows=5 loops=1)'
+'        Sort Key: "Battle"."NumberOfBattle"'
+'        Sort Method: quicksort  Memory: 17kB'
+'        ->  Hash Right Join  (cost=1.39..2.52 rows=1 width=68) (actual time=0.089..0.129 rows=5 loops=1)'
+'              Hash Cond: ("Season"."SeasonNumber" = "Battle"."SeasonNumber")'
+'              ->  Seq Scan on "Season"  (cost=0.00..1.09 rows=9 width=36) (actual time=0.010..0.025 rows=9 loops=1)'
+'              ->  Hash  (cost=1.38..1.38 rows=1 width=40) (actual time=0.061..0.061 rows=5 loops=1)'
+'                    Buckets: 1024  Batches: 1  Memory Usage: 5kB'
+'                    ->  Seq Scan on "Battle"  (cost=0.00..1.38 rows=1 width=40) (actual time=0.030..0.044 rows=5 loops=1)'
+'                          Filter: (("SeasonNumber" < 4) AND ("Winner" = 1))'
+'                          Rows Removed by Filter: 20'
+'Planning time: 0.294 ms'
+'Execution time: 0.238 ms'
+
+После индексации:
+'Limit  (cost=0.27..20.80 rows=1 width=68) (actual time=0.049..0.133 rows=5 loops=1)'
+'  ->  Nested Loop Left Join  (cost=0.27..20.80 rows=1 width=68) (actual time=0.044..0.116 rows=5 loops=1)'
+'        ->  Index Scan using battle_pk on "Battle"  (cost=0.14..12.64 rows=1 width=40) (actual time=0.025..0.043 rows=5 loops=1)'
+'              Filter: (("SeasonNumber" < 4) AND ("Winner" = 1))'
+'              Rows Removed by Filter: 20'
+'        ->  Index Scan using season_pk on "Season"  (cost=0.14..8.15 rows=1 width=36) (actual time=0.004..0.006 rows=1 loops=5)'
+'              Index Cond: ("Battle"."SeasonNumber" = "SeasonNumber")'
+'Planning time: 0.284 ms'
+'Execution time: 0.198 ms'
+______________________________
 
 2 сложный - Вывести цену работы каждого оператора и средний уровень поддержки в поединках, сыгранных вничью. Отсортировать по цене.
 Select ("Value" / "CamQ") As "Quantity", (("SupportLevel1"+"SupportLevel2")/2) as "Support"
@@ -45,6 +192,39 @@ from "Battle"
 inner join "Season"
 on ("Battle"."SeasonNumber"="Season"."SeasonNumber" and ("Winner"=3))
 order by "Quantity";
+___________________
+Оптимизация:
+
+До индексации:
+'Sort  (cost=2.48..2.48 rows=1 width=8) (actual time=0.154..0.160 rows=3 loops=1)'
+'  Sort Key: (("Season"."Value" / "Season"."CamQ"))'
+'  Sort Method: quicksort  Memory: 17kB'
+'  ->  Hash Join  (cost=1.33..2.47 rows=1 width=8) (actual time=0.090..0.120 rows=3 loops=1)'
+'        Hash Cond: ("Season"."SeasonNumber" = "Battle"."SeasonNumber")'
+'        ->  Seq Scan on "Season"  (cost=0.00..1.09 rows=9 width=12) (actual time=0.029..0.045 rows=9 loops=1)'
+'        ->  Hash  (cost=1.31..1.31 rows=1 width=12) (actual time=0.038..0.038 rows=3 loops=1)'
+'              Buckets: 1024  Batches: 1  Memory Usage: 5kB'
+'              ->  Seq Scan on "Battle"  (cost=0.00..1.31 rows=1 width=12) (actual time=0.017..0.025 rows=3 loops=1)'
+'                    Filter: ("Winner" = 3)'
+'                    Rows Removed by Filter: 22'
+'Planning time: 50.055 ms'
+'Execution time: 0.215 ms'
+
+После индексации:
+'Sort  (cost=10000000009.49..10000000009.50 rows=1 width=8) (actual time=31.439..31.443 rows=3 loops=1)'
+'  Sort Key: (("Season"."Value" / "Season"."CamQ"))'
+'  Sort Method: quicksort  Memory: 17kB'
+'  ->  Nested Loop  (cost=10000000000.14..10000000009.48 rows=1 width=8) (actual time=31.360..31.415 rows=3 loops=1)'
+'        ->  Seq Scan on "Battle"  (cost=10000000000.00..10000000001.31 rows=1 width=12) (actual time=0.023..0.035 rows=3 loops=1)'
+'              Filter: ("Winner" = 3)'
+'              Rows Removed by Filter: 22'
+'        ->  Index Scan using season_pk on "Season"  (cost=0.14..8.15 rows=1 width=12) (actual time=10.440..10.443 rows=1 loops=3)'
+'              Index Cond: ("SeasonNumber" = "Battle"."SeasonNumber")'
+'Planning time: 0.233 ms'
+'Execution time: 31.495 ms'
+
+Производительность заметно упала.
+____________________________
 
 3 сложный -  Вывести никнеймы и один из альтернативных никнеймов, дату рождения и номера всех поединков у участников, 
 которым больше 23 лет, сортировать по дате рождения
@@ -56,6 +236,51 @@ as "Battlepart"
 	inner join (Select distinct on("Partname") * from "AlternativeNames") as "AlternativeNames"
 on (("Battlepart"."Partname"="AlternativeNames"."Partname")
     and ("Battlepart"."Birthday"<date(current_date - interval '23 year')))
-    order by "Battlepart"."Birthday" desc
-   
-   
+    order by "Battlepart"."Birthday" desc;
+    _____
+   		 Оптимизация:
+		 До индексации:
+    'Sort  (cost=4.83..4.84 rows=4 width=76) (actual time=0.882..0.905 rows=17 loops=1)'
+'  Sort Key: "Participants"."Birthday" DESC'
+'  Sort Method: quicksort  Memory: 18kB'
+'  ->  Nested Loop  (cost=1.30..4.79 rows=4 width=76) (actual time=0.335..0.833 rows=17 loops=1)'
+'        Join Filter: (("Participants"."Partname" = "Battle"."Part1") OR ("Participants"."Partname" = "Battle"."Part2"))'
+'        Rows Removed by Join Filter: 83'
+'        ->  Seq Scan on "Battle"  (cost=0.00..1.25 rows=25 width=68) (actual time=0.032..0.068 rows=25 loops=1)'
+'        ->  Materialize  (cost=1.30..2.67 rows=2 width=68) (actual time=0.010..0.018 rows=4 loops=25)'
+'              ->  Hash Join  (cost=1.30..2.66 rows=2 width=68) (actual time=0.217..0.255 rows=4 loops=1)'
+'                    Hash Cond: ("Participants"."Partname" = "AlternativeNames"."Partname")'
+'                    ->  Seq Scan on "Participants"  (cost=0.00..1.31 rows=5 width=36) (actual time=0.025..0.073 rows=13 loops=1)'
+'                          Filter: ("Birthday" < date((('now'::cstring)::date - '23 years'::interval)))'
+'                          Rows Removed by Filter: 1'
+'                    ->  Hash  (cost=1.23..1.23 rows=6 width=64) (actual time=0.135..0.135 rows=5 loops=1)'
+'                          Buckets: 1024  Batches: 1  Memory Usage: 5kB'
+'                          ->  Subquery Scan on "AlternativeNames"  (cost=1.14..1.23 rows=6 width=64) (actual time=0.074..0.115 rows=5 loops=1)'
+'                                ->  Unique  (cost=1.14..1.17 rows=6 width=64) (actual time=0.070..0.096 rows=5 loops=1)'
+'                                      ->  Sort  (cost=1.14..1.15 rows=6 width=64) (actual time=0.065..0.074 rows=6 loops=1)'
+'                                            Sort Key: "AlternativeNames_1"."Partname"'
+'                                            Sort Method: quicksort  Memory: 17kB'
+'                                            ->  Seq Scan on "AlternativeNames" "AlternativeNames_1"  (cost=0.00..1.06 rows=6 width=64) (actual time=0.012..0.021 rows=6 loops=1)'
+'Planning time: 0.493 ms'
+'Execution time: 1.026 ms'
+
+После индексации:
+'Sort  (cost=10000000027.09..10000000027.10 rows=4 width=76) (actual time=0.836..0.859 rows=17 loops=1)'
+'  Sort Key: "Participants"."Birthday" DESC'
+'  Sort Method: quicksort  Memory: 18kB'
+'  ->  Nested Loop  (cost=10000000000.27..10000000027.05 rows=4 width=76) (actual time=0.253..0.797 rows=17 loops=1)'
+'        Join Filter: (("Participants"."Partname" = "Battle"."Part1") OR ("Participants"."Partname" = "Battle"."Part2"))'
+'        Rows Removed by Join Filter: 83'
+'        ->  Merge Join  (cost=0.27..24.86 rows=2 width=68) (actual time=0.160..0.342 rows=4 loops=1)'
+'              Merge Cond: ("AlternativeNames"."Partname" = "Participants"."Partname")'
+'              ->  Unique  (cost=0.13..12.24 rows=6 width=64) (actual time=0.084..0.108 rows=5 loops=1)'
+'                    ->  Index Scan using pips on "AlternativeNames"  (cost=0.13..12.22 rows=6 width=64) (actual time=0.079..0.088 rows=6 loops=1)'
+'              ->  Index Scan using "Participants_Partname_idx" on "Participants"  (cost=0.14..12.52 rows=5 width=36) (actual time=0.050..0.120 rows=13 loops=1)'
+'                    Filter: ("Birthday" < date((('now'::cstring)::date - '23 years'::interval)))'
+'                    Rows Removed by Filter: 1'
+'        ->  Materialize  (cost=10000000000.00..10000000001.38 rows=25 width=68) (actual time=0.007..0.060 rows=25 loops=4)'
+'              ->  Seq Scan on "Battle"  (cost=10000000000.00..10000000001.25 rows=25 width=68) (actual time=0.016..0.055 rows=25 loops=1)'
+'Planning time: 0.736 ms'
+'Execution time: 0.991 ms'
+В этом запросе индексы особой роли в производительности не играют.
+_____________________
