@@ -1,5 +1,5 @@
 1.
-
+Определяет количество батлов, в которых победа была отдана участнику с меньшей поддержкой зала
 SELECT "NumberOfBattle", "p1"."Partname" as "Partname1","p2"."Partname" as "Partname2", "Winner", 
 "SupportLevel1", "SupportLevel2", "p1"."Name" as "Name1", "p2"."Name" as "Name2" from "Battle" inner join "Participants" AS "p1" 
 on ("p1"."Partname"="Battle"."Part1") 
@@ -9,6 +9,7 @@ where ("Battle"."Winner" = 2 and "Battle"."SupportLevel2"<"Battle"."SupportLevel
 
 
 2.
+Считает количество участников старше ~27 лет и у которых есть альтернативное имя
 
 SELECT "Participants"."Partname", count(*) FROM "Participants" 
 INNER JOIN "AlternativeNames" 
@@ -16,7 +17,7 @@ ON ("Participants"."Partname" = "AlternativeNames"."Partname" AND "Participants"
 GROUP BY "Participants"."Partname";
 
 3.
-
+Количество батлов городов
 SELECT "C1"."City" AS "City1", "C2"."City" AS "City2", count(*) From "Battle" 
 inner join "Cities" AS "C1" ON ("C1"."Partname" = "Battle"."Part1") 
 inner join "Cities" AS "C2" ON ("C2"."Partname" = "Battle"."Part2") 
